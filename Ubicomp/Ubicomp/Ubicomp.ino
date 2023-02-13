@@ -8,6 +8,8 @@ Ultrasonic ultrasonic(7);  //aansluiten op D6
 #define PIN 3                   // De ledstrip aansluiten op D3
 #define NUMPIXELS 16            // het aantal ledjes in je strip,
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+#define DELAYVAL 50 
+
 
 #include <elapsedMillis.h>  /// installeer, als je dat nog niet gedaan had bij ToDo1,: "elapsedMillis.h" van Paul via: Tools > Manage Libraies
 elapsedMillis timeElapsed;  //maak een timer object aan met deze naam
@@ -70,25 +72,25 @@ void setup() {
 void loop() {
   int fakeTemp;
 
-  int coldWater = "green";
-  int regularWater = "orange";
-  int hotWater = "red";
+   char coldWater[] = "green";
+   char regularWater[] = "orange";
+   char hotWater[] = "red";
 
 
 
 
-  //   //AfstandSensor
-  //   long afstand;  //variable for storing the distance
-  //   afstand = ultrasonic.MeasureInCentimeters();
-  //   Serial.print("Afstand: ");
-  //   Serial.println(afstand);  //
-  //   delay(50);                //even wachten tussen de metingen voor leebaarheid
+    //AfstandSensor
+    long afstand;  //variable for storing the distance
+    afstand = ultrasonic.MeasureInCentimeters();
+    Serial.print("Afstand: ");
+    Serial.println(afstand);  //
+    delay(50);                //even wachten tussen de metingen voor leebaarheid
 
-  // /// --  code waardoor het niveau in groene leds is weergegeven
-  //   int pixNr = (afstand / 2);
-  //   pixels.clear();  // Set all pixel colors to 'off'
-  //   pixels.setPixelColor(pixNr, pixels.Color(0, 150, 0));
-  //   pixels.show();  // Stuur bovenstaande pixel update naar de strip
+  /// --  code waardoor het niveau in groene leds is weergegeven
+    int pixNr = (afstand / 2);
+    pixels.clear();  // Set all pixel colors to 'off'
+    pixels.setPixelColor(pixNr, pixels.Color(0, 150, 0));
+    pixels.show();  // Stuur bovenstaande pixel update naar de strip
 
   //   // ---  Code die de positieve feedback start
   //   // We gaan er van uit dat de afstandsensor in de dop van de fles zit. Deze afstand meet de afstand tot het vloeistof oppervlakte
@@ -159,26 +161,82 @@ void loop() {
 
 
 
- if (buttonPushCounter % 2 == 0) {
+ if (buttonPushCounter % 6 == 0) {
     digitalWrite(ledPin, LOW);
   } else {
     digitalWrite(ledPin, HIGH);
   }
-if (buttonPushCounter == 3) {
+
+if (buttonPushCounter == 1) {
     fakeTemp == coldWater;
+
+    Serial.print("START");
+    Serial.println("GOOD");
+    
+    
+  
+    
     // setColorTemp(coldWater);
     leds.setColorRGB(0, 0, 255-power, 0);
     
     return;
-  } if (buttonPushCounter == 4) {
+  } if (buttonPushCounter == 3) {
+
+
+  }
+
+if (buttonPushCounter == 2) {
+    fakeTemp == coldWater;
+
+    Serial.print("Temp Color is ");
+    Serial.println("GOOD");
+    for (int i = 0; i < NUMPIXELS; i++) { // voor elke led
+    pixels.setPixelColor(i, pixels.Color(0, 100, 0));//255 is de max waarde
+    pixels.show();   // stuur de bovenstaande kleur naar de betreffende led
+    delay(DELAYVAL); // pauze tussen het veranderen van de ledjes
+    Serial.println("welke led staat aan: "); Serial.println(i); //Geeft in de Serial monitor weer welke led aanstaat
+  }
+    
+    // setColorTemp(coldWater);
+    leds.setColorRGB(0, 0, 255-power, 0);
+    
+    return;
+  } if (buttonPushCounter == 3) {
     fakeTemp = regularWater;
+    Serial.print("Temp Color is ");
+    Serial.println("Norman");
     // setColorTemp(regularWater);
      leds.setColorRGB(0, 242-power, 153-power, 0);
+
+     for (int i = 0; i < NUMPIXELS; i++) { // voor elke led
+    pixels.setPixelColor(i, pixels.Color(100, 150, 0));//255 is de max waarde
+    pixels.show();   // stuur de bovenstaande kleur naar de betreffende led
+    delay(DELAYVAL); // pauze tussen het veranderen van de ledjes
+    Serial.println("welke led staat aan: "); Serial.println(i); //Geeft in de Serial monitor weer welke led aanstaat
+  }
+     
     delay(50);
     return;
-  } if (buttonPushCounter == 5) {
+  } if (buttonPushCounter == 4) {
     fakeTemp = hotWater;
+    Serial.print("Temp Color is ");
+    Serial.println("HOT");
     leds.setColorRGB(0, 255-power, 0, 0);
+    for (int i = 0; i < NUMPIXELS; i++) { // voor elke led
+    pixels.setPixelColor(i, pixels.Color(100, 0, 0));//255 is de max waarde
+    pixels.show();   // stuur de bovenstaande kleur naar de betreffende led
+    delay(DELAYVAL); // pauze tussen het veranderen van de ledjes
+    Serial.println("welke led staat aan: "); Serial.println(i); //Geeft in de Serial monitor weer welke led aanstaat
+  }
+    // setColorTemp(hotWater);
+    delay(50);
+    buttonPushCounter = 0;
+  } if (buttonPushCounter == 6) {
+    fakeTemp = hotWater;
+    Serial.print("Temp Color is ");
+    Serial.println("off");
+    leds.setColorRGB(0, 0-power, 0, 0);
+    
     // setColorTemp(hotWater);
     delay(50);
     buttonPushCounter = 0;
@@ -240,86 +298,8 @@ uint32_t Wheel(byte WheelPos) {
   if (WheelPos < 170) {
     WheelPos -= 85;
     return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
+  } else {
   WheelPos -= 170;
   return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
-
-
-// void setColorTemp(int temp) {
-//   Serial.print("temp is ");
-//   Serial.println(temp);
-//   float hue = 0.0;
-
-//   byte led = 0;
-
-
-// for (byte i=0; i<NUM_LEDS; i++){
-//     if (i%2 == 0){
-//   if (temp = "green") {
-//     // leds.setColorHSB(led, 133, 100, 100);
-//         leds.setColorRGB(0, 0, 255-power, 0);
-//     Serial.println("green");
-//   } else if (temp = "orange") {
-//     // leds.setColorHSB(led, 28, 69, 95);
-//       leds.setColorRGB(i, 242-power, 153-power, 0);
-//     Serial.println("orange");
-//   }
-//   else if (temp = "red") {
-//     // leds.setColorHSB(led, 3, 100, 100);
-//      leds.setColorRGB(i, 255-power, 0, 0);
-//     Serial.println("red");
-//   } 
-//   // } else {
-//   //   leds.setColorRGB(i, 0, 255-power, 0);
-//   //   // leds.setColorHSB(led, 28, 69, 10);
-//   //   Serial.println(temp);
-//   // }
-// }
-//  power-= 100;
-  
-//   delay(10);
-// }
-// }
-
-
-//   switch (temp) {
-//   case "green":
-//     leds.setColorRGB(0, 0, 255, 56);
-//     break;
-//   case "orange":
-//     leds.setColorRGB(0, 242, 153, 74);
-//     break;
-//   case "red":
-//     // statements
-// leds.setColorRGB(0, 255, 56, 1);
-//   break;
-//   default:
-//     leds.setColorRGB(0, 255, 255, 255);
-//     break;
-//   }
-
-// }
-
-
-
-
-// void setColorTemp(long temp) {
-//   switch (temp) {
-//   case "green":
-//     leds.setColorRGB(0, 0, 255, 56);
-//     break;
-//   case "orange":
-//     leds.setColorRGB(0, 242, 153, 74);
-//     break;
-//   case "red":
-//     // statements
-// leds.setColorRGB(0, 255, 56, 1);
-//   break;
-//   default:
-//     leds.setColorRGB(0, 255, 255, 255);
-//     break;
-//   }
-
-// }
+}
